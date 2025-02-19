@@ -253,8 +253,6 @@ def run_detection(frame):
     # Apply NMS
     det_pred = non_max_suppression(inf_out, conf_thres=opt.conf_thres, iou_thres=opt.iou_thres, classes=None, agnostic=False)
 
-    # det = det_pred[0]
-
     da_predict = da_seg_out[:, :, pad_h:(height-pad_h),pad_w:(width-pad_w)]
     da_seg_mask = torch.nn.functional.interpolate(da_predict, scale_factor=int(1/ratio), mode='bilinear')
     _, da_seg_mask = torch.max(da_seg_mask, 1)
@@ -268,6 +266,7 @@ def run_detection(frame):
 
     img_det = show_seg_result(img_det, (da_seg_mask, ll_seg_mask), _, _, is_demo=True)
 
+    # det = det_pred[0]
     # if len(det):
     #     det[:,:4] = scale_coords(img.shape[2:],det[:,:4],img_det.shape).round()
     #     for *xyxy,conf,cls in reversed(det):
