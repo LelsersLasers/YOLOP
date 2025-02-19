@@ -11,15 +11,11 @@ import torchvision.transforms as transforms
 from lib.config import cfg
 from lib.models import get_net
 # from lib.core.general import non_max_suppression, scale_coords
+# from lib.utils import plot_one_box
 from lib.utils import plot_one_box, show_seg_result, letterbox_for_img
-normalize = transforms.Normalize(
-        mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-    )
 
-transform=transforms.Compose([
-            transforms.ToTensor(),
-            normalize,
-        ])
+normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+transform = transforms.Compose([transforms.ToTensor(), normalize])
 
 class ObjOpt:
     def __init__(self, **entries):
@@ -99,7 +95,6 @@ def run_detection(frame):
     # inf_out, _ = det_out
 
     _, _, height, width = img.shape
-    # h,w, _ = img_det.shape
     pad_w, pad_h = shapes[1][1]
     pad_w = int(pad_w)
     pad_h = int(pad_h)
