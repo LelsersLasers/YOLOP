@@ -232,7 +232,6 @@ def run_detection(frame):
     img = transform(img).to(device)
     # img = img.half() if half else img.float()  # uint8 to fp16/32
     img = img.float()
-    print(img.shape)
     if img.ndimension() == 3:
         img = img.unsqueeze(0)
     det_out, da_seg_out,ll_seg_out = model(img)
