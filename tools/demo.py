@@ -235,10 +235,10 @@ def run_detection(frame):
     if img.ndimension() == 3:
         img = img.unsqueeze(0)
     det_out, da_seg_out,ll_seg_out = model(img)
-    inf_out, _ = det_out
+    # inf_out, _ = det_out
 
     _, _, height, width = img.shape
-    h,w, _ = img_det.shape
+    # h,w, _ = img_det.shape
     pad_w, pad_h = shapes[1][1]
     pad_w = int(pad_w)
     pad_h = int(pad_h)
