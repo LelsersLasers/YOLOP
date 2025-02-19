@@ -182,6 +182,7 @@ class LoadStreams:  # multiple IP or RTSP cameras
         #img = img[..., ::-1].transpose((0, 3, 1, 2))  # BGR to RGB, BHWC to BCHW
         img = np.ascontiguousarray(img)
 
+        # path, img, img_det, vid_cap,shapes
         return self.sources, img, img0[0], None, shapes
 
     def __len__(self):
