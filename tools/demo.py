@@ -207,8 +207,6 @@ def run_detection(frame):
     names = model.module.names if hasattr(model, 'module') else model.names
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
-
-
     # vid_path, vid_writer = None, None
     # img = torch.zeros((1, 3, opt.img_size, opt.img_size), device=device)  # init img
     # _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
@@ -225,8 +223,6 @@ def run_detection(frame):
         #img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR to RGB, to 3x416x416
         img = np.ascontiguousarray(img)
 
-        print(img.shape)
-
         return img, img0, shapes
     
     img, img_det, shapes = p(frame)
@@ -239,7 +235,6 @@ def run_detection(frame):
     print(img.shape)
     if img.ndimension() == 3:
         img = img.unsqueeze(0)
-        print(img.shape)
     det_out, da_seg_out,ll_seg_out = model(img)
     inf_out, _ = det_out
 
@@ -251,7 +246,8 @@ def run_detection(frame):
     ratio = shapes[1][0][1]
 
     # Apply NMS
-    det_pred = non_max_suppression(inf_out, conf_thres=opt.conf_thres, iou_thres=opt.iou_thres, classes=None, agnostic=False)
+    # det_pred = non_max_suppression(inf_out, conf_thres=opt.conf_thres, iou_thres=opt.iou_thres, classes=None, agnostic=False)
+    # det = det_pred[0]
 
     da_predict = da_seg_out[:, :, pad_h:(height-pad_h),pad_w:(width-pad_w)]
     da_seg_mask = torch.nn.functional.interpolate(da_predict, scale_factor=int(1/ratio), mode='bilinear')
@@ -266,7 +262,6 @@ def run_detection(frame):
 
     img_det = show_seg_result(img_det, (da_seg_mask, ll_seg_mask), _, _, is_demo=True)
 
-    # det = det_pred[0]
     # if len(det):
     #     det[:,:4] = scale_coords(img.shape[2:],det[:,:4],img_det.shape).round()
     #     for *xyxy,conf,cls in reversed(det):
@@ -291,4 +286,5 @@ if __name__ == '__main__':
     opt = parser.parse_args()
     with torch.no_grad():
         detect(cfg,opt)
+
 
