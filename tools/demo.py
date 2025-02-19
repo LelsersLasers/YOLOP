@@ -169,7 +169,7 @@ def run_detection(frame):
     opt = {
         'weights': 'YOLOP/weights/End-to-end.pth',
         'source': frame,
-        'img_size': 640,
+        'img_size': 320,
         'conf_thres': 0.25,
         'iou_thres': 0.45,
         # 'device': 'cpu',
