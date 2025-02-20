@@ -23,8 +23,8 @@ class ObjOpt:
 OPT = {
     'weights': 'YOLOP/weights/End-to-end.pth',
     # 'source': frame,
-    'img_size': 320,
-    'conf_thres': 0.25,
+    'img_size': 640,
+    'conf_thres': 0.1,
     'iou_thres': 0.45,
     # 'device': 'cpu',
     # 'save-dir': 'inference/output',
