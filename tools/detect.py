@@ -11,7 +11,9 @@ from lib.config import cfg
 from lib.models import get_net
 # from lib.core.general import non_max_suppression, scale_coords
 # from lib.utils import plot_one_box
-from lib.utils import show_seg_result, letterbox_for_img
+# from lib.utils import show_seg_result
+from lib.utils import letterbox_for_img
+
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 transform = transforms.Compose([transforms.ToTensor(), normalize])
@@ -82,7 +84,7 @@ def run_detection(model, device, opt, frame):
 
         return img, img0, shapes
     
-    img, img_det, shapes = p(frame)
+    img, _img_det, shapes = p(frame)
     
 
     # for i, (path, img, img_det, vid_cap,shapes) in tqdm(enumerate(dataset),total = len(dataset)):
@@ -106,16 +108,21 @@ def run_detection(model, device, opt, frame):
 
     da_predict = da_seg_out[:, :, pad_h:(height-pad_h),pad_w:(width-pad_w)]
     da_seg_mask = torch.nn.functional.interpolate(da_predict, scale_factor=int(1/ratio), mode='bilinear')
+
     _, da_seg_mask = torch.max(da_seg_mask, 1)
     da_seg_mask = da_seg_mask.int().squeeze().cpu().numpy()
 
-    
-    ll_predict = ll_seg_out[:, :,pad_h:(height-pad_h),pad_w:(width-pad_w)]
-    ll_seg_mask = torch.nn.functional.interpolate(ll_predict, scale_factor=int(1/ratio), mode='bilinear')
-    _, ll_seg_mask = torch.max(ll_seg_mask, 1)
-    ll_seg_mask = ll_seg_mask.int().squeeze().cpu().numpy()
+    # Get the raw percentages of the road class instead of the index of the highest
+    # da_seg_mask = da_seg_mask[:, 1, :, :].squeeze()
+    # da_seg_mask = da_seg_mask.squeeze().detach().cpu().numpy()
 
-    img_det = show_seg_result(img_det, (da_seg_mask, ll_seg_mask), _, _, is_demo=True)
+    
+    # ll_predict = ll_seg_out[:, :,pad_h:(height-pad_h),pad_w:(width-pad_w)]
+    # ll_seg_mask = torch.nn.functional.interpolate(ll_predict, scale_factor=int(1/ratio), mode='bilinear')
+    # _, ll_seg_mask = torch.max(ll_seg_mask, 1)
+    # ll_seg_mask = ll_seg_mask.int().squeeze().cpu().numpy()
+
+    # img_det = show_seg_result(img_det, (da_seg_mask, ll_seg_mask), _, _, is_demo=True)
 
     # if len(det):
     #     det[:,:4] = scale_coords(img.shape[2:],det[:,:4],img_det.shape).round()
@@ -123,4 +130,6 @@ def run_detection(model, device, opt, frame):
     #         label_det_pred = f'{names[int(cls)]} {conf:.2f}'
     #         plot_one_box(xyxy, img_det , label=label_det_pred, color=colors[int(cls)], line_thickness=2)
 
-    return img_det
+    # return img_det
+
+    return da_seg_mask
