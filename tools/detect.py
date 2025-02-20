@@ -20,33 +20,44 @@ class ObjOpt:
     def __init__(self, **entries):
         self.__dict__.update(entries)
 
+OPT = {
+    'weights': 'YOLOP/weights/End-to-end.pth',
+    # 'source': frame,
+    'img_size': 320,
+    'conf_thres': 0.25,
+    'iou_thres': 0.45,
+    # 'device': 'cpu',
+    # 'save-dir': 'inference/output',
+    'augment': False,
+    'update': False
+}
 
-def run_detection(frame):
-    opt = {
-        'weights': 'YOLOP/weights/End-to-end.pth',
-        'source': frame,
-        'img_size': 320,
-        'conf_thres': 0.25,
-        'iou_thres': 0.45,
-        # 'device': 'cpu',
-        # 'save-dir': 'inference/output',
-        'augment': False,
-        'update': False
-    }
-    opt = ObjOpt(**opt)
+
+def setup():
+    opt = ObjOpt(**OPT)
 
     # device = select_device(logger,opt.device)
     # half = device.type != 'cpu'  # half precision only supported on CUDA
     
     device = torch.device('cpu')
 
-    # Load model
     model = get_net(cfg)
     checkpoint = torch.load(opt.weights, map_location = device)
     model.load_state_dict(checkpoint['state_dict'])
     model = model.to(device)
+
     # if half:
     #     model.half()  # to FP16
+
+    # img = torch.zeros((1, 3, opt.img_size, opt.img_size), device=device)
+    # _ = model(img.half() if half else img) if device.type != 'cpu' else None
+
+    model.eval()
+
+    return model, device, opt
+
+
+def run_detection(model, device, opt, frame):
 
     # Set Dataloader
     # if opt.source.isnumeric():
@@ -54,13 +65,7 @@ def run_detection(frame):
     #     dataset = LoadStreams(opt.source, img_size=opt.img_size)
     # else:
     #     dataset = LoadImages(opt.source, img_size=opt.img_size)
-
-
-
-    # vid_path, vid_writer = None, None
-    # img = torch.zeros((1, 3, opt.img_size, opt.img_size), device=device)  # init img
-    # _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
-    model.eval()
+    
 
     def p(img0):
         h0, w0 = img0.shape[:2]
