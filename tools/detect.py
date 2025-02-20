@@ -4,7 +4,6 @@ sys.path.append(BASE_DIR)
 
 print(sys.path)
 import torch
-from numpy import random
 import numpy as np
 import torchvision.transforms as transforms
 
@@ -12,7 +11,7 @@ from lib.config import cfg
 from lib.models import get_net
 # from lib.core.general import non_max_suppression, scale_coords
 # from lib.utils import plot_one_box
-from lib.utils import plot_one_box, show_seg_result, letterbox_for_img
+from lib.utils import show_seg_result, letterbox_for_img
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 transform = transforms.Compose([transforms.ToTensor(), normalize])
@@ -37,9 +36,6 @@ def run_detection(frame):
     opt = ObjOpt(**opt)
 
     # device = select_device(logger,opt.device)
-    # if os.path.exists(opt.save_dir):  # output dir
-    #     shutil.rmtree(opt.save_dir)  # delete dir
-    # os.makedirs(opt.save_dir)  # make new dir
     # half = device.type != 'cpu'  # half precision only supported on CUDA
     
     device = torch.device('cpu')
@@ -60,9 +56,6 @@ def run_detection(frame):
     #     dataset = LoadImages(opt.source, img_size=opt.img_size)
 
 
-    # Get names and colors
-    names = model.module.names if hasattr(model, 'module') else model.names
-    colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
     # vid_path, vid_writer = None, None
     # img = torch.zeros((1, 3, opt.img_size, opt.img_size), device=device)  # init img
@@ -72,7 +65,7 @@ def run_detection(frame):
     def p(img0):
         h0, w0 = img0.shape[:2]
 
-        img, ratio, pad = letterbox_for_img(img0, new_shape=opt.img_size, auto=True)
+        img, _ratio, pad = letterbox_for_img(img0, new_shape=opt.img_size, auto=True)
         h, w = img.shape[:2]
         shapes = (h0, w0), ((h / h0, w / w0), pad)
 
@@ -91,7 +84,7 @@ def run_detection(frame):
     img = img.float()
     if img.ndimension() == 3:
         img = img.unsqueeze(0)
-    det_out, da_seg_out,ll_seg_out = model(img)
+    _det_out, da_seg_out, ll_seg_out = model(img)
     # inf_out, _ = det_out
 
     _, _, height, width = img.shape
